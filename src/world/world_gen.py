@@ -1,7 +1,7 @@
 from world.dtypes import Residence, Commercial, Employment, Location, Tile, World
 from general.dtypes import Agent
 
-from dataclasses import dataclass, Field
+from dataclasses import dataclass, field
 import random
 
 @dataclass	
@@ -11,7 +11,7 @@ class WorldGenerator:
     no_residences: int
     no_employments: int
     no_commercials: int
-    tiles: set[Tile] = Field(default_factory=dict)
+    tiles: set[Tile] = field(default_factory=set)
     is_built: bool = False
     
     def __post_init__(self) -> None:
@@ -20,25 +20,16 @@ class WorldGenerator:
     def _check_inputs(self) -> bool: return True if self.no_commercials + self.no_employments + self.no_residences + self.population < self.size[0] * self.size[1] else False
 
     def build(self) -> World:
-        pass
+        for struct in [Residence, Employment, Commercial]: self._build_structures(struct)
+        self.is_built = True
 
-
-
-    def _return_empty_tiles(self) -> list:
-        return [tile for tile in list(self.tiles.values()) if tile._is_vacant()]
-
-    def _build_residences(self) -> list[Residence]: 
+    def _build_structures(self, structure: Residence |  Employment | Commercial, *args):
         for i in range(self.no_residences):
-            while (loc := self._rloc_gen()) not in [tile.location.__repr__() for tile in self.tiles]:
-                self.tiles.add(Residence(i, Location(*loc)))
-        
-        return [Residence(id=i, location=Location(id=i, x=random.randint(), y=0), capacity=1) for i in range(self.no_residences)]
+            while (loc := self._rloc_gen()) not in [tile.location() for tile in self.tiles]:
+                self.tiles.add(structure(i, Location(*loc), random.randint(1, 5)))
 
-    def _build_employments(self) -> list[Employment]:
-        pass
-
-    def _build_commercials(self) -> list[Commercial]:
-        pass
+    def _partition_structures(self):
+        raise NotImplementedError
 
     def _build_agents(self) -> list[Agent]:
         pass
@@ -53,5 +44,5 @@ if __name__ == "__main__":
         no_employments=0,
         no_commercials=0
     )
-    gen._build_residences()
+    gen.build()
     print(gen.tiles)

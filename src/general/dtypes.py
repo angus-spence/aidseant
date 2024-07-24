@@ -1,4 +1,4 @@
-from world.dtypes import Residence
+
 
 from dataclasses import dataclass
 
@@ -16,4 +16,3 @@ class Agent:
     genome: AgentGenome
     osc: Oscilator
     age: int
-    residence: Residence

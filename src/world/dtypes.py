@@ -1,31 +1,36 @@
 from general.dtypes import Agent
 
 import random
-from dataclasses import dataclass, Field
+from dataclasses import dataclass, field
+from enum import Enum
 
-@dataclass(repr=False, frozen=True)
+class structures(Enum):
+    RESIDENCE = 1
+    EMPLOYMENT = 2
+    COMMERCIAL = 3
+@dataclass(frozen=True)
 class Location:
     x: int
     y: int
 
-    def __repr__(self) -> tuple[int, int]: return (self.x, self.y)
-
+    def __call__(self) -> tuple[int, int]: return (self.x, self.y)
 @dataclass(frozen=True)
 class Residence:
     id: int
     location: Location
-    capacity: int
+    density: int
 
 @dataclass(frozen=True)
 class Employment:
     id: int
     location: Location
-    capacity: int
+    density: int
 
 @dataclass(frozen=True)
 class Commercial:
     id: int
     location: Location
+    density: int
 
 @dataclass
 class Tile:
@@ -40,7 +45,7 @@ class Tile:
 class World:
     size: tuple
     tiles: dict[int, Tile]
-    agents: list = Field(default_factory=list)
-    residences: list[Residence] = Field(default_factory=list)
-    employments: list[Employment] = Field(default_factory=list)
-    commercials: list[Commercial] = Field(default_factory=list)
+    agents: list[Agent]
+    residences: list[Residence]
+    employments: list[Employment]
+    commercials: list[Commercial]
