@@ -11,7 +11,7 @@ class WorldGenerator:
     no_residences: int
     no_employments: int
     no_commercials: int
-    tiles: dict[int: Tile] = Field(default_factory=dict)
+    tiles: set[Tile] = Field(default_factory=dict)
     is_built: bool = False
     
     def __post_init__(self) -> None:
@@ -19,21 +19,18 @@ class WorldGenerator:
 
     def _check_inputs(self) -> bool: return True if self.no_commercials + self.no_employments + self.no_residences + self.population < self.size[0] * self.size[1] else False
 
-    def build(self, seed: int) -> World:
-        residents, employments, commercials, agents = self._build_residences(), self._build_employments(), self._build_commercials(), self._build_agents()
-        world = World(size=self.size)
-        self.is_built = True
-    
-    def _is_ocuppied(self, location: Location) -> bool:
-        return location in self.tiles
+    def build(self) -> World:
+        pass
+
+
 
     def _return_empty_tiles(self) -> list:
         return [tile for tile in list(self.tiles.values()) if tile._is_vacant()]
 
     def _build_residences(self) -> list[Residence]: 
         for i in range(self.no_residences):
-            loc = (random.randint(0, self.size[0]), random.randint(0, self.size[0]))
-            residents = [Residence(id=i, location=Location(id=i, x=random.randint(), y=0), capacity=1) for i in range(self.no_residences)]
+            while (loc := self._rloc_gen()) not in [tile.location.__repr__() for tile in self.tiles]:
+                self.tiles.add(Residence(i, Location(*loc)))
         
         return [Residence(id=i, location=Location(id=i, x=random.randint(), y=0), capacity=1) for i in range(self.no_residences)]
 
@@ -45,3 +42,16 @@ class WorldGenerator:
 
     def _build_agents(self) -> list[Agent]:
         pass
+
+    def _rloc_gen(self) -> tuple[int, int]: return (random.randint(0, self.size[0]), random.randint(0, self.size[0]))
+
+if __name__ == "__main__":
+    gen = WorldGenerator(
+        size=(200, 200),
+        population=100,
+        no_residences=100,
+        no_employments=0,
+        no_commercials=0
+    )
+    gen._build_residences()
+    print(gen.tiles)

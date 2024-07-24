@@ -11,34 +11,11 @@ def timing(fnc_name: str) -> Generator[None, None, None]:
     try: yield
     finally: print(f' ---> {fnc_name} TOOK {round(time.monotonic() - t0, 4)} SECONDS')
 
-NO_TILES = int(1e6)
-
-@dataclass(frozen=True)
-class Residence:
-    id: int
-    capacity: int
-
-@dataclass(frozen=True)
-class Employment:
-    id: int
-    capacity: int
-
-@dataclass(frozen=True)
-class Commercial:
-    id: int
-    capacity: int
-
-@dataclass
-class Tile:
-    location: tuple[int, int]
-    tenant: Residence | Employment | Commercial | None
-
-    def _is_vacant(self) -> bool: return False if self.tenant is False else True
-
-@timing("tile_scout")
-def scout_tiles(tiles: list[Tile]) -> list:
-    return [tile.location for tile in tiles if tile._is_vacant()]
+def main():
+    while (a := random.randint(1, 20)) != 20:
+        print(a)
+        print("I am not 20")
+    print(f"{a}! I am 20")
 
 if __name__ == "__main__":
-    tiles = [Tile(location=(random.randint(0, 500), random.randint(0, 500)), tenant=(random.choice([Residence, Employment, Commercial, None]))) for _ in range(NO_TILES)]
-    scout_tiles(tiles)
+    main()

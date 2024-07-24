@@ -1,12 +1,9 @@
-from world.world import Residence
+from world.dtypes import Residence
 
 from dataclasses import dataclass
 
-@dataclass
-class Location:
-    id: int
-    x: int
-    y: int
+class Oscilator:
+    def init(self) -> None: pass 
 
 @dataclass
 class AgentGenome:
@@ -16,6 +13,7 @@ class AgentGenome:
 @dataclass
 class Agent:
     id: int
-    age: int
     genome: AgentGenome
+    osc: Oscilator
+    age: int
     residence: Residence
