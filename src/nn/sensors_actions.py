@@ -8,14 +8,15 @@ class MovementSensors(Enum):
     BOUNDARY_DIST = 4
     LAST_MOVE_DIR_X = 5
     LAST_MOVE_DIR_Y = 6
-    POP_FORWARD = 7         # POPULATION FORWARD
-    BAR_FORWARD = 8         # BARRIER FORWARD
+    POP_FORWARD = 7         # POPULATION FORWARD -> DO WE NEED THIS
+    BAR_FORWARD = 8         # BARRIER FORWARD -> DO WE NEED THIS
 
 class SelfSensors(Enum):
     ENERGY = 0
     HUNGER = 1
     SLEEP = 2
     WORK = 3
+    PLAY = 4                # PLAY IS UNIVERSAL
 
 class Actions(Enum):
     MOVE_X = 0

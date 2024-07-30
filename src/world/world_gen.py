@@ -23,10 +23,10 @@ class WorldGenerator:
         for struct in [Residence, Employment, Commercial]: self._build_structures(struct)
         self.is_built = True
 
-    def _build_structures(self, structure: Residence |  Employment | Commercial, *args):
+    def _build_structures(self, structure: Residence | Employment | Commercial):
         for i in range(self.no_residences):
-            while (loc := self._rloc_gen()) not in [tile.location() for tile in self.tiles]:
-                self.tiles.add(structure(i, Location(*loc), random.randint(1, 5)))
+            while (loc := self._rloc_gen()) not in [tile.location.full for tile in self.tiles]:
+                self.tiles.add(Tile(Location(*loc), structure(i, Location(*loc), random.randint(1, 5))))
 
     def _partition_structures(self):
         raise NotImplementedError
@@ -35,6 +35,8 @@ class WorldGenerator:
         pass
 
     def _rloc_gen(self) -> tuple[int, int]: return (random.randint(0, self.size[0]), random.randint(0, self.size[0]))
+
+    def tile_serialiser(self) -> list[int]: return [tile.tenant.serial for tile in self.tiles if not tile._is_vacant()]
 
 if __name__ == "__main__":
     gen = WorldGenerator(
@@ -45,4 +47,5 @@ if __name__ == "__main__":
         no_commercials=0
     )
     gen.build()
-    print(gen.tiles)
+    print(gen.tile_serialiser())
+    #print(gen.tiles)
