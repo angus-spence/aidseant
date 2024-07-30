@@ -4,7 +4,11 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Self
 
-class structures(Enum):
+import matplotlib.pyplot as plt
+import numpy as np
+
+class Tenants(Enum):
+    VACANT = auto()
     RESIDENCE = auto()
     EMPLOYMENT = auto()
     COMMERCIAL = auto()
@@ -19,45 +23,53 @@ class Location:
     def __repr__(self) -> str: return f'(x={self.x}, y={self.y})'
     def __eq__(self, value: Self) -> bool: return True if value.x == self.x and value.y == self.y else False
     def __ne__(self, value: Self) -> bool: return True if not self.__eq__(value) else False
+    @property
+    def loc(self) -> tuple[int, int]: return (self.x, self.y)
 
-@dataclass(frozen=True)
-class Residence:
+@dataclass
+class Tenant:
     id: int
+    tenant: Tenants
     location: Location
-    density: int
 
-    def serial(self) -> int: return structures.RESIDENCE.value
+    def __hash__(self) -> int: return hash((self.id, self.serial, self.location.loc))
 
-@dataclass(frozen=True)
-class Employment:
-    id: int
-    location: Location
-    density: int
+    @property
+    def serial(self) -> int: return Tenants[self.tenant].value
 
-    def serial(self) -> int: return structures.EMPLOYMENT.value
+@dataclass(kw_only=True)
+class Residence(Tenant):
+    pass
 
-@dataclass(frozen=True)
-class Commercial:
-    id: int
-    location: Location
-    density: int
+@dataclass(kw_only=True)
+class Employment(Tenant):
+    pass
 
-    def serial(self) -> int: return structures.COMMERCIAL.value
+@dataclass(kw_only=True)
+class Commercial(Tenant):
+    pass
 
 @dataclass
 class Tile:
     location: Location
-    tenant: Residence | Employment | Commercial | Agent | None
+    tenant: Tenant
 
-    def __post_init__(self) -> None: raise TypeError(f"invalid tenant {type(self.tenant)}") if not self._valid_tenant() else None
+    #ASSUME: __hash__() -> YOU CANNOT HAVE MULTIPLE TENANTS WITH THE SAME TYPE
+
+    def __post_init__(self) -> None: assert self._valid_tenant() == True, f"invalid tenant {type(self.tenant)}"
+    def __hash__(self) -> int: return hash((self.location.x, self.location.y, self.tenant.serial))
+    def update(self, tenant: Tenant): self.tenant = tenant
     def _is_vacant(self) -> bool: return False if self.tenant is not None else True
     def _valid_tenant(self) -> bool: return any([isinstance(self.tenant, valids) for valids in [Residence, Employment, Commercial, Agent]])
 
 @dataclass(frozen=True)
 class World:
     size: tuple
-    tiles: dict[int, Tile]
+    tiles: set[Tile]
     agents: list[Agent]
-    residences: list[Residence]
-    employments: list[Employment]
-    commercials: list[Commercial]
+
+    def __print__(self) -> None: 
+        bmap = np.zeros(*self.size)
+        for x, y, tennant in [(*tile.location.loc, tile.tenant) for tile in self.tiles]: bmap[x, y] = tennant.serial
+        plt.matshow(bmap)
+        plt.show()

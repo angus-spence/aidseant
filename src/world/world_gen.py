@@ -1,4 +1,4 @@
-from world.dtypes import Residence, Commercial, Employment, Location, Tile, World
+from world.dtypes import Residence, Commercial, Employment, Location, Tile, World, Tenants
 from general.dtypes import Agent
 
 from dataclasses import dataclass, field
@@ -19,33 +19,37 @@ class WorldGenerator:
 
     def _check_inputs(self) -> bool: return True if self.no_commercials + self.no_employments + self.no_residences + self.population < self.size[0] * self.size[1] else False
 
+    @property
+    def overflow(self) -> bool: return sum(1 for tile in self.tiles if tile.tenant != Tenants.VACANT) > (self.size[0] * self.size[1])
+
+
+    # TODO: FIX THIS
     def build(self) -> World:
-        for struct in [Residence, Employment, Commercial]: self._build_structures(struct)
-        self.is_built = True
+        for struct_count in self.no_commercials, self.no_employments, self.no_residences:
+            while (loc := self._rloc_gen()) not in [tile.location.loc for tile in self.tiles if tile.tenant != Tenants.VACANT]:
+                for _ in range(struct_count):
+                    self.tiles.add(Tile(Location(*loc), structure(i, Location(*loc), random.randint(1, 5))))
 
-    def _build_structures(self, structure: Residence | Employment | Commercial):
-        for i in range(self.no_residences):
-            while (loc := self._rloc_gen()) not in [tile.location.full for tile in self.tiles]:
-                self.tiles.add(Tile(Location(*loc), structure(i, Location(*loc), random.randint(1, 5))))
+        return World(size=self.size,
+                     tiles=self.tiles,
+                     agents=None,
+                     residences=None,
+                     employments=None,
+                     commercials=None)
 
-    def _partition_structures(self):
-        raise NotImplementedError
-
-    def _build_agents(self) -> list[Agent]:
-        pass
-
+    def _partition_structures(self): raise NotImplementedError
+    def _build_agents(self) -> list[Agent]: raise NotImplementedError
     def _rloc_gen(self) -> tuple[int, int]: return (random.randint(0, self.size[0]), random.randint(0, self.size[0]))
-
-    def tile_serialiser(self) -> list[int]: return [tile.tenant.serial for tile in self.tiles if not tile._is_vacant()]
+    def _get_empty(self) -> set[Tile]: return set(tile for tile in self.tiles if tile.tenant==Tenants.VACANT)
+    def tile_serialiser(self) -> list[int]: return [tile.tenant.serial for tile in self.tiles]
 
 if __name__ == "__main__":
-    gen = WorldGenerator(
+    world = WorldGenerator(
         size=(200, 200),
         population=100,
         no_residences=100,
         no_employments=0,
         no_commercials=0
-    )
-    gen.build()
-    print(gen.tile_serialiser())
-    #print(gen.tiles)
+    ).build()
+
+    print(world)
