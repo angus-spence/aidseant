@@ -22,13 +22,13 @@ class WorldGenerator:
     @property
     def overflow(self) -> bool: return sum(1 for tile in self.tiles if tile.tenant != Tenants.VACANT) > (self.size[0] * self.size[1])
 
-
     # TODO: FIX THIS
     def build(self) -> World:
-        for struct_count in self.no_commercials, self.no_employments, self.no_residences:
-            while (loc := self._rloc_gen()) not in [tile.location.loc for tile in self.tiles if tile.tenant != Tenants.VACANT]:
+        for tenant in Tenants:
+            while (loc := self._rloc_gen()) in [tile.location.loc for tile in self._get_empty()]:
                 for _ in range(struct_count):
-                    self.tiles.add(Tile(Location(*loc), structure(i, Location(*loc), random.randint(1, 5))))
+                    struct = 
+                    self.tiles.add(Tile(Location(*loc), ))
 
         return World(size=self.size,
                      tiles=self.tiles,
@@ -40,8 +40,8 @@ class WorldGenerator:
     def _partition_structures(self): raise NotImplementedError
     def _build_agents(self) -> list[Agent]: raise NotImplementedError
     def _rloc_gen(self) -> tuple[int, int]: return (random.randint(0, self.size[0]), random.randint(0, self.size[0]))
-    def _get_empty(self) -> set[Tile]: return set(tile for tile in self.tiles if tile.tenant==Tenants.VACANT)
     def tile_serialiser(self) -> list[int]: return [tile.tenant.serial for tile in self.tiles]
+    def _get_empty(self) -> set[Tile]: return set(tile for tile in self.tiles if tile.tenant==Tenants.VACANT)
 
 if __name__ == "__main__":
     world = WorldGenerator(
