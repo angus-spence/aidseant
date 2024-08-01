@@ -1,4 +1,4 @@
-from world.dtypes import Residence, Commercial, Employment, Location, Tile, World, Tenants
+from world.dtypes import Tenant, Location, Tile, World, Tenants
 from general.dtypes import Agent
 
 from dataclasses import dataclass, field
@@ -24,18 +24,19 @@ class WorldGenerator:
 
     # TODO: FIX THIS
     def build(self) -> World:
+        struct_itr = dict(zip(Tenants, [0, self.no_commercials, self.no_employments, self.no_residences]))
+        _id = 0
         for tenant in Tenants:
-            while (loc := self._rloc_gen()) in [tile.location.loc for tile in self._get_empty()]:
-                for _ in range(struct_count):
-                    struct = 
-                    self.tiles.add(Tile(Location(*loc), ))
+            if tenant == Tenants.VACANT: continue
+            for _ in range(struct_itr[tenant]):
+                while (loc := self._rloc_gen()) not in [tile.location.loc for tile in self.tiles]:
+                    self.tiles.add(Tile(Location(*loc), Tenant(id, tenant, Location(*loc))))
+                    _id += 1
+                    if len([tile for tile in self.tiles if tile.tenant.tenant == tenant]) == struct_itr[tenant]: continue
 
         return World(size=self.size,
                      tiles=self.tiles,
-                     agents=None,
-                     residences=None,
-                     employments=None,
-                     commercials=None)
+                     agents=None)
 
     def _partition_structures(self): raise NotImplementedError
     def _build_agents(self) -> list[Agent]: raise NotImplementedError
@@ -47,9 +48,8 @@ if __name__ == "__main__":
     world = WorldGenerator(
         size=(200, 200),
         population=100,
-        no_residences=100,
-        no_employments=0,
-        no_commercials=0
+        no_residences=25,
+        no_employments=25,
+        no_commercials=25
     ).build()
-
     print(world)

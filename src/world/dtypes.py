@@ -35,7 +35,7 @@ class Tenant:
     def __hash__(self) -> int: return hash((self.id, self.serial, self.location.loc))
 
     @property
-    def serial(self) -> int: return Tenants[self.tenant].value
+    def serial(self) -> int: return Tenants[self.tenant.name].value
 
 @dataclass(kw_only=True)
 class Residence(Tenant):
@@ -56,11 +56,9 @@ class Tile:
 
     #ASSUME: __hash__() -> YOU CANNOT HAVE MULTIPLE TENANTS WITH THE SAME TYPE
 
-    def __post_init__(self) -> None: assert self._valid_tenant() == True, f"invalid tenant {type(self.tenant)}"
     def __hash__(self) -> int: return hash((self.location.x, self.location.y, self.tenant.serial))
     def update(self, tenant: Tenant): self.tenant = tenant
     def _is_vacant(self) -> bool: return False if self.tenant is not None else True
-    def _valid_tenant(self) -> bool: return any([isinstance(self.tenant, valids) for valids in [Residence, Employment, Commercial, Agent]])
 
 @dataclass(frozen=True)
 class World:
@@ -68,8 +66,8 @@ class World:
     tiles: set[Tile]
     agents: list[Agent]
 
-    def __print__(self) -> None: 
-        bmap = np.zeros(*self.size)
-        for x, y, tennant in [(*tile.location.loc, tile.tenant) for tile in self.tiles]: bmap[x, y] = tennant.serial
-        plt.matshow(bmap)
+    def __str__(self) -> None: 
+        bmap = np.zeros(self.size)
+        for x, y, tennant in [(*tile.location.loc, tile.tenant) for tile in self.tiles]: bmap[x-1, y-1] = tennant.serial
+        plt.matshow(bmap, cmap='Paired')
         plt.show()
