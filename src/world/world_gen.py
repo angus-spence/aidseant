@@ -1,5 +1,5 @@
 from world.dtypes import Tenant, Location, Tile, World, Tenants
-from general.dtypes import Agent
+from agent.dtypes import Agent
 
 from dataclasses import dataclass, field
 import random
@@ -22,7 +22,6 @@ class WorldGenerator:
     @property
     def overflow(self) -> bool: return sum(1 for tile in self.tiles if tile.tenant != Tenants.VACANT) > (self.size[0] * self.size[1])
 
-    # TODO: FIX THIS
     def build(self) -> World:
         struct_itr = dict(zip(Tenants, [0, self.no_commercials, self.no_employments, self.no_residences]))
         _id = 0
@@ -30,26 +29,24 @@ class WorldGenerator:
             if tenant == Tenants.VACANT: continue
             for _ in range(struct_itr[tenant]):
                 while (loc := self._rloc_gen()) not in [tile.location.loc for tile in self.tiles]:
-                    self.tiles.add(Tile(Location(*loc), Tenant(id, tenant, Location(*loc))))
+                    if len([tile for tile in self.tiles if tile.tenant.tenant == tenant]) >= struct_itr[tenant]: continue
+                    self.tiles.add(Tile(Location(*loc), Tenant(_id, tenant)))
                     _id += 1
-                    if len([tile for tile in self.tiles if tile.tenant.tenant == tenant]) == struct_itr[tenant]: continue
 
         return World(size=self.size,
                      tiles=self.tiles,
                      agents=None)
 
-    def _partition_structures(self): raise NotImplementedError
-    def _build_agents(self) -> list[Agent]: raise NotImplementedError
     def _rloc_gen(self) -> tuple[int, int]: return (random.randint(0, self.size[0]), random.randint(0, self.size[0]))
     def tile_serialiser(self) -> list[int]: return [tile.tenant.serial for tile in self.tiles]
     def _get_empty(self) -> set[Tile]: return set(tile for tile in self.tiles if tile.tenant==Tenants.VACANT)
 
 if __name__ == "__main__":
     world = WorldGenerator(
-        size=(200, 200),
+        size=(50, 50),
         population=100,
         no_residences=25,
         no_employments=25,
         no_commercials=25
     ).build()
-    print(world)
+    world.plot()

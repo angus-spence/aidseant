@@ -10,9 +10,3 @@ class AgentGenome:
     id: int
     genome: str
 
-@dataclass
-class Agent:
-    id: int
-    genome: AgentGenome
-    osc: Oscilator
-    age: int
