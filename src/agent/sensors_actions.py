@@ -1,5 +1,11 @@
 from enum import Enum, auto
 
+# -----------------------------------
+# POTENTIAL SENSORS / ACTIONS
+#
+# SENSORS
+# - AGENTS FORWARD VECTOR
+
 class Sensors(Enum):
     LOC_X = auto()
     LOC_Y = auto()
@@ -30,3 +36,6 @@ class Actions(Enum):
     SLEEP = auto()
     WORK = auto()
     PLAY = auto()
+
+class Internal(Enum):
+    INTERNAL = auto()
