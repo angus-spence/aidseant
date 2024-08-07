@@ -6,6 +6,7 @@ from enum import Enum, auto
 # SENSORS
 # - AGENTS FORWARD VECTOR
 
+
 class Sensors(Enum):
     LOC_X = auto()
     LOC_Y = auto()
@@ -23,7 +24,7 @@ class Sensors(Enum):
     AGE = auto()
     POPULATION = auto()         # POPULATION DENSITY IN NEIGHBOURHOOD
     POPULATION_FB = auto()      # POPULATION DENSITY IN FORWARD / BACKWARD AXIS
-    POPULATION_LR = auto()      # POPULATION DENSITY IN LEFT / RIGHT AXIS     
+    POPULATION_LR = auto()      # POPULATION DENSITY IN LEFT / RIGHT AXIS    
 
 class Actions(Enum):
     MOVE_X = auto()
@@ -38,4 +39,9 @@ class Actions(Enum):
     PLAY = auto()
 
 class Internal(Enum):
-    INTERNAL = auto()
+    INTERNAL_1 = auto()
+    INTERNAL_2 = auto()
+    INTERNAL_3 = auto()
+    INTERNAL_4 = auto()
+    INTERNAL_5 = auto()
+    INTERNAL_6 = auto()
