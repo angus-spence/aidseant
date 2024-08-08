@@ -38,10 +38,5 @@ class Actions(Enum):
     WORK = auto()
     PLAY = auto()
 
-class Internal(Enum):
-    INTERNAL_1 = auto()
-    INTERNAL_2 = auto()
-    INTERNAL_3 = auto()
-    INTERNAL_4 = auto()
-    INTERNAL_5 = auto()
-    INTERNAL_6 = auto()
+class Internal(Enum):   
+    INTERNAL = auto()         

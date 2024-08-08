@@ -1,12 +1,12 @@
 # Aidseant
 
-Cone / Bishop guy theory in autonomous vehicle problem applied to transit trip-generation / assignment modelling; no car, bus, train, tube in human DNA, why programme such in agent-based transport modelling.
+Cone guy theory in autonomous vehicle problem applied to transit trip-generation / assignment modelling; no car, bus, train, tube in human DNA, why programme such in agent-based transport modelling.
 
 ## TODO:
 
 - [ ] ALPHA
-    - [ ] World
-        - [ ] World builder
+    - [x] World
+        - [x] World builder
     - [ ] Agents
         - [ ] Neural Net
         - [ ] Agent builder
