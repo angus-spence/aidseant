@@ -9,9 +9,9 @@ from viznet import NodeBrush, DynamicShow, EdgeBrush
 
 @dataclass
 class Neuron:
-    id: int                                         # 000
-    classification: Sensors | Actions | Internal    # 00
-    x: float = 0.0                                  # 0000
+    id: int                                         
+    classification: Sensors | Actions | Internal    
+    x: float = 0.0                                  
 
     def __hash__(self) -> int: return hash(self.byte)
     def __eq__(self, value: Self) -> bool: return True if self.byte == value.byte else False
@@ -31,16 +31,17 @@ class Gene:
     @staticmethod
     def random_weight() -> float: return random.randint(0, 1000) / 1000
     @property
-    def source_type(self) -> bool: return 1 if isinstance(self.source.classification, Sensors) else 0
+    def source_type(self) -> bool: return 1 if isinstance(self.source.classification, Sensors) else 0 if isinstance(self.source.classification, Actions) else 2
     @property
-    def destination_type(self) -> bool: return 1 if isinstance(self.destination, Sensors) else 0
+    def destination_type(self) -> bool: return 1 if isinstance(self.destination, Sensors) else 0 if isinstance(self.destination.classification, Actions) else 2
     @staticmethod
-    def gene_hex_encode(w: float, source: Neuron, destination: Neuron) -> str: return round(w*1e9,0) + source.id*1e + source.classification.value*100 + destination.classification.value
+    def hex_encode(w: float, source: Neuron, destination: Neuron) -> str: return hex(int(round(w, 5)*1e10+source.id*1e6+source.classification.value*1e4+destination.id*1e2+destination.classification.value))
     @staticmethod
-    def gene_hex_decode(x: str) -> tuple[float, Neuron, Neuron]: return (x[:3], Neuron(x[4]))
-    
+    def hex_decode(x: str) -> tuple[float, Neuron, Neuron]: return (x[:3], Neuron(x[4]))
     @property
-    def byte(self) -> bytes: return struct.pack('iiii', self.source_type, self.destination_type, self.source.classification.value, self.destination.classification.value)
+    def hex(self) -> str: return self.hex_encode(self.w, self.source, self.destination)
+    @property
+    def byte(self) -> bytes: return struct.pack('iiiii', self.source_type, self.destination_type, self.source.classification.value, self.destination.classification.value, int(round(self.w, 3)*1e4))
 
 @dataclass
 class Genome:
@@ -49,7 +50,7 @@ class Genome:
     @property
     def serial(self) -> str: return(hex())
     def plot(self) -> None:
-        with DynamicShow((5, 5), f'Agent Neural Network.png') as d:
+        with DynamicShow((5, 5), f'Agent Neural Network.png'):
             for gene in self.gene_sequence:
                 brush_s = NodeBrush('nn.input' if isinstance(gene.source.classification, Sensors) else 'nn.recurrent', size='normal')
                 source = brush_s >> (gene.source.id, 5 if isinstance(gene.source.classification, Sensors) else 0)
@@ -94,4 +95,6 @@ class Perceptron:
 if __name__ == "__main__":
     g = GenomeGenerator(80, 20, 120)
     g1 = g.build()
+    a = list(g1.gene_sequence)[0]
+    print(Gene.hex_encode(a.w, a.source, a.destination))
     g1.plot()
