@@ -48,7 +48,7 @@ class Genome:
     gene_sequence: set[Gene]
 
     @property
-    def serial(self) -> str: return(hex())
+    def serial(self) -> str: return ''.join(gene.hex + '|' for gene in self.gene_sequence).removesuffix('|')
     def plot(self) -> None:
         with DynamicShow((5, 5), f'Agent Neural Network.png'):
             for gene in self.gene_sequence:
@@ -95,6 +95,5 @@ class Perceptron:
 if __name__ == "__main__":
     g = GenomeGenerator(80, 20, 120)
     g1 = g.build()
-    a = list(g1.gene_sequence)[0]
-    print(Gene.hex_encode(a.w, a.source, a.destination))
-    g1.plot()
+    a = list(g1.gene_sequence)
+    print(g1.serial)

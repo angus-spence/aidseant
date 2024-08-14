@@ -1,11 +1,13 @@
 from enum import Enum, auto
 
-# -----------------------------------
-# POTENTIAL SENSORS / ACTIONS
-#
-# SENSORS
-# - AGENTS FORWARD VECTOR
+"""
+POTENTIAL SENSORS / MOTOR NEURONS
 
+SENSORS
+- AGENT FORWARD VECTOR
+- OBJECT AHEAD BOOL 
+- OBJECT AHEAD SYMBOL           # IF SYMBOL OF OBJECT DOES NOT EXIST IN GENOME, BUILD IT UP TO SOME NEURON CAP
+"""  
 
 class Sensors(Enum):
     LOC_X = auto()
@@ -15,8 +17,9 @@ class Sensors(Enum):
     BOUNDARY_DIST = auto()
     LAST_MOVE_DIR_X = auto()
     LAST_MOVE_DIR_Y = auto()
-    POP_FORWARD = auto()        # POPULATION FORWARD -> DO WE NEED THIS
-    BAR_FORWARD = auto()        # BARRIER FORWARD -> DO WE NEED THIS
+    POP_FORWARD = auto()        
+    BAR_FORWARD = auto()        
+    TIME_OF_DAY = auto()
     ENERGY = auto()
     HUNGER = auto()
     SLEEP = auto()
@@ -26,17 +29,15 @@ class Sensors(Enum):
     POPULATION_FB = auto()      # POPULATION DENSITY IN FORWARD / BACKWARD AXIS
     POPULATION_LR = auto()      # POPULATION DENSITY IN LEFT / RIGHT AXIS    
 
-class Actions(Enum):
-    MOVE_X = auto()
-    MOVE_Y = auto()
+class MN(Enum):                 # MOTOR NEURONS
     MOVE_FORWARD = auto()
     MOVE_BACKWARD = auto()
     ROTATE_LEFT = auto()
     ROTATE_RIGHT = auto()
-    EAT = auto()
-    SLEEP = auto()
+    EAT = auto()                # EAT, SLEEP, WORK AND PLAY WILL BE REPLACED IN BETA
+    SLEEP = auto()              # FOR MORE GENERALISED ACTIONS -> INTERACT
     WORK = auto()
     PLAY = auto()
 
 class Internal(Enum):   
-    INTERNAL = auto()         
+    INTERNAL = auto()           # INTERNAL NEURONS NEED REFACTORS TO SUPPORT REWRITES FOR SYMBOL EMBEDDING
